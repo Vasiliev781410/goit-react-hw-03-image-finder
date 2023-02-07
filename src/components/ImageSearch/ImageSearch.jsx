@@ -2,14 +2,10 @@ import { Component } from "react";
 import { Searchbar } from "components/Searchbar/Searchbar.jsx";
 import { ImageGallery } from "components/ImageGallery/ImageGallery.jsx";
 import { Button } from "components/Button/Button.jsx";
-//import getDataFromApi  from '../../api/api.js';
-import axios from 'axios';
-const AUTH_TOKEN = '32700035-2643abb13134080679caa7410';
-const instance = axios.create({
-  baseURL: 'https://pixabay.com/api'
- });
-const PER_PAGE = '&per_page=12';
-const otherParams = '&image_type=photo&orientation=horizontal&safesearch=true';
+import { Loader } from "components/Loader/Loader.jsx";
+import { Modal } from "components/Modal/Modal.jsx";
+import Notiflix from 'notiflix';
+import {getDataFromApi}  from '../../api/api.js';
 
 export class ImageSearch extends Component{
     state = {
@@ -17,54 +13,78 @@ export class ImageSearch extends Component{
         images: [],
         filter: "",
         loadHits: 0,
+        isLoading: false,
+        showModal: false,
+        largeImageURL: "",
+
     }
     componentDidMount(){        
-        console.log("did mount");      
+            
     }
-    async componentDidUpdate(_,prevState){      
+
+    async componentDidUpdate(_,prevState){             
+        if (this.state.filter.trim() === ""){
+            Notiflix.Notify.failure('Oops, there is no images with that name');   
+            this.setState({ page: "", filter: "", images: []});   
+            return;                  
+         }          
         if (this.state.page === prevState.page && this.state.filter === prevState.filter){
             return;
         }
-        if (this.state.filter.trim()  === ""){
-            //Notiflix.Notify.failure('Oops, there is no images with that name');     
-            return;  
-         }     
-        console.log("update");  
-        //const response = await getDataFromApi(this.state.filter,this.state.page);
-        //this.setState({ images: response.data.hits });
-        try { 
-            const {images, filter, page} = this.state;                
-            const response = await instance.get('/?key='+AUTH_TOKEN+'&q='+filter.trim()+otherParams+PER_PAGE+'&page='+page);
-            //console.log(response.data.hits);
+              
+      
+       try { 
+            const {images, filter, page} = this.state;
+            this.setState({ isLoading: true }); 
+            const response = await getDataFromApi(filter, page);               
+            //const response = await instanceAxios.get('/?key='+AUTH_TOKEN+'&q='+filter.trim()+otherParams+PER_PAGE+'&page='+page);
             if (images.length !== 0) {
-                this.setState({ images: [...images, ...response.data.hits]});
+                this.setState({ images: [...images, ...response.hits], isLoading: false });
             } else {
-                this.setState({ images: [...response.data.hits]});
-            };
+                this.setState({ images: [...response.hits], isLoading: false });
+            };              
         } 
-        catch (error) { 
-
+        catch (error) {  
+            Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');           
+            this.setState({ isLoading: false });                 
         };   
     }
 
-                        
+    onClickImage = (evt) => {       
+        this.setState({showModal: true, largeImageURL: evt.target.name}); 
+        this.setModalOpenStatus(evt);
+        document.addEventListener("keydown", this.handleClick); 
+    } 
+    setModalOpenStatus = (evt) => { 
+        if (evt.target === evt.currentTarget){     
+            this.setState({showModal: ! this.state.showModal});
+        } 
+    }  
+    handleClick = (e) => {            
+        if (e.code === "Escape") { 
+            this.setState({showModal: ! this.state.showModal}); 
+            document.removeEventListener("keydown", this.handleClick);     
+        };
+    };                                   
     onSubmitSearchForm = (filter) =>{                       
         this.setState({filter: filter, page: 1});      
     }
-    loadMore = () => {
-        console.log('page',this.state.page);
+    loadMore = () => {       
         this.setState({page: this.state.page+1}); 
     }
-    render(){  
-        //console.log(this.state.image);
-
+    render(){          
+        const {page, images, isLoading, showModal,largeImageURL} = this.state;      
+                             
         return (
             <>
-                <Searchbar onSubmit={this.onSubmitSearchForm} page={this.state.page}/>
-                <ImageGallery images={this.state.images}/>
-                <Button onLoadMore={this.loadMore} title="Load more"/>
+                <Searchbar onSubmit={this.onSubmitSearchForm} page={page}/>   
+                {page > 0 ? <ImageGallery images={images} onClickImage={this.onClickImage}/>: <></>}  
+                {isLoading ? <Loader/> : page >= 1 ? <Button onLoadMore={this.loadMore} title="Load more"/>: <></>}  
+                {showModal && <Modal largeImageURL={largeImageURL} setModalOpenStatus={this.setModalOpenStatus}/>}   
             </>        
 
         )
     }
 }
+
+

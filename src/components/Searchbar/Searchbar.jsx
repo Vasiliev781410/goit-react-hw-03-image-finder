@@ -1,4 +1,5 @@
 import { Component } from "react";
+import Notiflix from 'notiflix';
 import css from './Searchbar.module.css';
 
 export class Searchbar extends Component{
@@ -10,9 +11,10 @@ export class Searchbar extends Component{
         evt.preventDefault(); 
         const form = evt.currentTarget;       
         const filter =  form.elements.searchQuery.value;               
-        if (this.state.filter === filter){
-            return;
-        }             
+        //if (this.state.filter === filter){
+            //Notiflix.Notify.failure('Oops, there is no images with that name'); 
+            //return;
+        //}             
         this.props.onSubmit(filter);
      }
 

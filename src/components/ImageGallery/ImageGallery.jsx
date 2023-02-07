@@ -1,16 +1,22 @@
 import { ImageGalleryItem } from "components/ImageGalleryItem/ImageGalleryItem";
+import { Component } from "react";
+import css from './ImageGallery.module.css';
 
-//import { nanoid } from 'nanoid';
 
-export const ImageGallery = ({ images }) => {
-  console.log(images);
-  return (
-    <ul className='gallery'>
-      {images.map((image) => {
-        console.log(image);
-        return (
-          <ImageGalleryItem key={image.id} webformatURL={image.webformatURL} largeImageURL={image.largeImageURL}/>            
-        )})}
-    </ul>
-)};
+export class ImageGallery extends Component {
+  
+  componentDidMount(){   
+    
+  }
+  render(){
+    return (
+      <ul className={css.gallery}>
+        {this.props.images.map((image) => {
+          //console.log(image);
+          return (
+            <ImageGalleryItem key={image.id} webformatURL={image.webformatURL} largeImageURL={image.largeImageURL} onClickImage={this.props.onClickImage}/>            
+          )})}
+      </ul>
+    )}
+  };
 
