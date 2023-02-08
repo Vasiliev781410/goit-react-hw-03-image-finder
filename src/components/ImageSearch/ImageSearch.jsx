@@ -6,6 +6,7 @@ import { Loader } from "components/Loader/Loader.jsx";
 import { Modal } from "components/Modal/Modal.jsx";
 import Notiflix from 'notiflix';
 import {getDataFromApi}  from '../../api/api.js';
+import PropTypes from 'prop-types';
 
 export class ImageSearch extends Component{
     state = {
@@ -18,7 +19,14 @@ export class ImageSearch extends Component{
         showModal: false,
         largeImageURL: "",
     }
-    async componentDidUpdate(_,prevState){             
+    // getSnapshotBeforeUpdate(){
+        // const btn = document.querySelector(".button");
+        // return btn.scrollHeight;
+    // }
+
+    async componentDidUpdate(_,prevState,btnHeight){ 
+       // console.log('height ',btnHeight);
+        //window.scrollTo(0,btnHeight);            
         if (this.state.page === prevState.page && this.state.filter === prevState.filter){           
             return;
         }                     
@@ -56,8 +64,7 @@ export class ImageSearch extends Component{
                     window.scrollBy({
                     top: window.innerHeight * page,
                     behavior: "smooth",    
-                });                
-                console.log('scroll ', window.innerHeight * page);            
+                });                       
             };                 
         }
         catch (error){}
@@ -99,4 +106,4 @@ export class ImageSearch extends Component{
     }
 }
 
-
+Searchbar.propTypes = {onSubmit: PropTypes.func};

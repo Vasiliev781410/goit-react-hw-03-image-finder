@@ -1,4 +1,5 @@
 import css from './Modal.module.css';
+import PropTypes from 'prop-types';
 
 export const Modal = ({largeImageURL, setModalOpenStatus}) => {  
     return (
@@ -8,3 +9,8 @@ export const Modal = ({largeImageURL, setModalOpenStatus}) => {
             </div>
       </div>                 
 )};
+
+Modal.propTypes = {
+  largeImageURL: PropTypes.string,
+  setModalOpenStatus: PropTypes.func,
+};
