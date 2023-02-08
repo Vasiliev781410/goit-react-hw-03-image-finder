@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export const ImageGalleryItem = ({ webformatURL, largeImageURL, onClickImage}) => { 
     const onClickImageLocal = (evt) =>{
-        onClickImage(evt);
+        onClickImage(evt.target.name);
     }
     return (
     <li onClick={onClickImageLocal} className={css.imageGalleryItem}>          
