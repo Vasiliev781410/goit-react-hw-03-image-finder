@@ -1,5 +1,5 @@
 import { Component } from "react";
-import Notiflix from 'notiflix';
+//import Notiflix from 'notiflix';
 import css from './Searchbar.module.css';
 
 export class Searchbar extends Component{
